@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Bookstore.Api.Models;
 
+// Represents one row in the Books table.
 public partial class Book
 {
     public int BookId { get; set; }

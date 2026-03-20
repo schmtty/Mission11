@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      // Sends frontend /api calls to the ASP.NET backend during development.
       '/api': 'http://localhost:5000',
     },
   },

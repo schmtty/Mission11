@@ -19,6 +19,7 @@ type BooksResponse = {
 }
 
 function App() {
+  // UI state for the current page of books and paging controls.
   const [books, setBooks] = useState<Book[]>([])
   const [totalBooks, setTotalBooks] = useState(0)
   const [pageNum, setPageNum] = useState(1)
@@ -27,12 +28,14 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Computes total pages each time totalBooks or pageSize changes.
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(totalBooks / pageSize)),
     [totalBooks, pageSize],
   )
 
   useEffect(() => {
+    // Lets us cancel an in-flight fetch if inputs change quickly.
     const abortController = new AbortController()
 
     const loadBooks = async () => {
@@ -40,6 +43,7 @@ function App() {
         setLoading(true)
         setError('')
 
+        // Calls backend endpoint with paging and sorting query params.
         const response = await fetch(
           `/api/books?pageSize=${pageSize}&pageNum=${pageNum}&sort=${sortOrder}`,
           { signal: abortController.signal },
@@ -53,6 +57,7 @@ function App() {
         setBooks(data.books)
         setTotalBooks(data.totalBooks)
       } catch (err) {
+        // Ignore abort errors, since those are expected during cleanup.
         if (err instanceof DOMException && err.name === 'AbortError') {
           return
         }
@@ -65,10 +70,12 @@ function App() {
 
     void loadBooks()
 
+    // Cleanup runs when effect dependencies change or component unmounts.
     return () => abortController.abort()
   }, [pageNum, pageSize, sortOrder])
 
   useEffect(() => {
+    // Keeps current page valid if page size changes and reduces page count.
     if (pageNum > totalPages) {
       setPageNum(totalPages)
     }
