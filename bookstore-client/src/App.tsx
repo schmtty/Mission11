@@ -33,6 +33,11 @@ function App() {
     () => Math.max(1, Math.ceil(totalBooks / pageSize)),
     [totalBooks, pageSize],
   )
+  // Builds [1, 2, 3, ...] based on the current total page count.
+  const pageNumbers = useMemo(
+    () => Array.from({ length: totalPages }, (_, index) => index + 1),
+    [totalPages],
+  )
 
   useEffect(() => {
     // Lets us cancel an in-flight fetch if inputs change quickly.
@@ -167,9 +172,20 @@ function App() {
         >
           Previous
         </button>
-        <span>
-          Page {pageNum} of {totalPages}
-        </span>
+        <div className="d-flex align-items-center gap-1">
+          {pageNumbers.map((page) => (
+            <button
+              key={page}
+              className={`btn ${
+                page === pageNum ? 'btn-primary' : 'btn-outline-primary'
+              }`}
+              disabled={page === pageNum}
+              onClick={() => setPageNum(page)}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
         <button
           className="btn btn-outline-primary"
           disabled={pageNum >= totalPages}
